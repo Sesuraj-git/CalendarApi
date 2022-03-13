@@ -43,6 +43,7 @@ class Department(models.Model):
 
 
 class Teacher(models.Model):
+    user = models.OneToOneField(User, unique=True, on_delete=models.SET_NULL, null=True)
     staff_id = models.CharField(max_length=360, blank=False)
     name = models.CharField(max_length=360, blank=False)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True)
@@ -67,15 +68,15 @@ class Class(models.Model):
 
 
 class Student(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField(User, unique=True, on_delete=models.SET_NULL, null=True)
     student_id = models.CharField(max_length=360, blank=False)
     name = models.CharField(max_length=360, blank=False)
     email = models.TextField(blank=True)
     class_id = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True)
+    is_leader = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.name) + " " + str(self.student_id)
-
 
     class Meta:
         verbose_name_plural = " 5. Students"
@@ -122,8 +123,11 @@ class Today(models.Model):
 
 
 class CollegeEvent(models.Model):
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    added_on = models.DateField(auto_now=True)
     type = models.CharField(max_length=360, blank=True)
     name = models.CharField(max_length=360, blank=False)
+    due_date = models.DateField(blank=False)
     description = models.CharField(blank=True, max_length=1024)
 
     class Meta:
@@ -131,9 +135,12 @@ class CollegeEvent(models.Model):
 
 
 class DepartmentEvent(models.Model):
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True)
+    added_on = models.DateField(auto_now=True)
     type = models.CharField(max_length=360, blank=True)
     name = models.CharField(max_length=360, blank=False)
+    due_date = models.DateField(blank=False)
     description = models.CharField(blank=True, max_length=1024)
 
     class Meta:
